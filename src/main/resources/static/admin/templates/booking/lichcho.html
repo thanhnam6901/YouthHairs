@@ -29,7 +29,7 @@
 						<td>{{item.employee1.fullName}}</td>
 						<td>{{item.totalTime}}</td>
 						<td>{{item.totalPrice}}</td>
-						<td>{{item.createDate}}</td>
+						<td>{{item.createDate | date:'dd-MM-yyyy'}}</td>
 						<td>{{item.statusbooking.statusName}}</td>
 						<td>
 							<a href="#!booking" ng-click="showDetail(item)"
@@ -161,7 +161,7 @@
 								<label class="text-black" for="stylist">Chọn Stylist <span class="text-danger">(*)</span></label> 
 								<select class="form-control" id="stylist"
 										ng-model="form.employee1.fullName"
-										ng-options="x for x in employee">
+										ng-options="x for x in employee1">
 								 </select>
 							</div>
 						</div>

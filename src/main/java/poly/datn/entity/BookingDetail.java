@@ -24,9 +24,12 @@ import java.sql.Time;
 @NamedQuery(name="BookingDetail.findAll", query="SELECT b FROM BookingDetail b")
 public class BookingDetail implements Serializable {
 	private static final long serialVersionUID = 1L;
+//	@EmbeddedId
+//	private BookingDetailPK id;
 
-	@EmbeddedId
-	private BookingDetailPK id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Integer id;
 
 	private float price;
 
@@ -34,16 +37,11 @@ public class BookingDetail implements Serializable {
 
 	//bi-directional many-to-one association to Booking
 	@ManyToOne
-	@JsonIgnore
 	@JoinColumn(name="BookingId")
 	private Booking booking;
 
 	//bi-directional many-to-one association to Service
 	@ManyToOne
-	@JsonIgnore
 	@JoinColumn(name="ServiceId")
 	private Services service;
-
-	
-
 }
