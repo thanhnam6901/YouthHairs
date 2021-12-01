@@ -29,7 +29,10 @@ public class IndexController {
 	EmployeeService employeeService;
 	
 	@RequestMapping("/")
-	public String index() {
+	public String index(Model model) {
+		model.addAttribute("sers",iService.findAll());
+		List<Employee> listStylist = employeeService.loadStylist();
+		model.addAttribute("stylist",listStylist);
 		
 		return "layout/home";
 	}
@@ -48,20 +51,20 @@ public class IndexController {
 	
 	@RequestMapping("/contact")
 	public String contact(@ModelAttribute Contact contact, Model model) {
-		model.addAttribute("contact", contact);
+//		model.addAttribute("contact", contact);
 		return "layout/contact";
 	}
 	
-	@PostMapping("/contact/save")
-	public String saveContact(
-			Contact contact
-			) {
-		
-			contactService.save(new Contact(new Date(), contact.getEmail(), contact.getFullName(), contact.getNote(), contact.getPhone(), false));
-			
-			return "redirect:/"; 
-		
-	}
+//	@PostMapping("/contact/save")
+//	public String saveContact(
+//			Contact contact
+//			) {
+//		
+//			contactService.save(new Contact(new Date(), contact.getEmail(), contact.getFullName(), contact.getNote(), contact.getPhone(), false));
+//			
+//			return "redirect:/"; 
+//		
+//	}
 	
 	@RequestMapping("/about")
 	public String about() {
@@ -70,7 +73,7 @@ public class IndexController {
 	}
 
 	@RequestMapping("/booking")
-	public String booking( Model model) {
+	public String booking(Model model) {
 		model.addAttribute("sers",iService.findAll());
 		List<Employee> listStylist = employeeService.loadStylist();
 		model.addAttribute("stylist",listStylist);
@@ -79,7 +82,6 @@ public class IndexController {
 //		}
 		return "layout/booking";
 	}
-
 
 //	@RequestMapping("/profile")
 //	public String profile() {
