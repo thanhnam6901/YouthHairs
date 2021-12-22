@@ -2,14 +2,11 @@ package poly.datn.entity;
 
 import java.io.Serializable;
 import javax.persistence.*;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import javax.validation.constraints.NotNull;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.sql.Time;
 
 
 /**
@@ -31,9 +28,11 @@ public class BookingDetail implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 
+	@NotNull
 	private float price;
 
-	private Time time;
+//	@NotNull
+//	private Time time;
 
 	//bi-directional many-to-one association to Booking
 	@ManyToOne

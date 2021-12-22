@@ -1,5 +1,8 @@
 package poly.datn.service.impl;
 
+import java.sql.Time;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -11,16 +14,32 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
 
-import poly.datn.dao.BookingDAO;
-import poly.datn.entity.Booking;
-import poly.datn.entity.Employee;
+import poly.datn.dao.*;
+import poly.datn.entity.*;
 import poly.datn.service.BookingService;
+import poly.datn.service.TimeBookingService;
+import poly.datn.service.dto.BookingDTO;
 
 @Service
 public class BookingServiceImpl implements BookingService {
 
 	@Autowired
 	BookingDAO bookingDAO;
+
+	@Autowired
+	EmployeeDAO employeeDAO;
+
+	@Autowired
+	BookingDetailDAO bookingDetailDAO;
+
+	@Autowired
+	StatusBookingDAO statusBookingDAO;
+
+	@Autowired
+	TimeBookingDAO timeBookingDAO;
+
+	@Autowired
+	TimeBookingDetailDAO timeBookingDetailDAO;
 
 	@Override
 	public <S extends Booking> S save(S entity) {
@@ -189,5 +208,205 @@ public class BookingServiceImpl implements BookingService {
 	@Override
 	public List<Booking> findByStatusWFCAndStylist(int id) {
 		return bookingDAO.findByStatusWFCAndStylist(id);
+	}
+
+	@Override
+	public Booking findBookingIATbyStylist(Integer id) {
+		return bookingDAO.findBookingIATbyStylist(id);
+	}
+
+	@Override
+	public List<Booking> findBookingWFCbyStylist(Integer id, Date date) {
+		return bookingDAO.findBookingWFCbyStylist(id, date);
+	}
+
+	@Override
+	public List<Booking> getAllBookingIAT() {
+		return bookingDAO.getAllBookingIAT();
+	}
+
+	@Override
+	public String[] getAllTimeBooking(){
+		return bookingDAO.findByTimeBooking();
+	}
+
+	@Override
+	public BookingDTO AddInfoBookingUpdate(BookingDTO bookingDTO) {
+		Time time = null;
+		try {
+			Statusbooking statusBooking = statusBookingDAO.StatusBookigByIdCOM();
+			TimeBooking timeBooking=new TimeBooking();
+			if (!bookingDTO.getTimeBooking().contains("h")){
+				timeBooking=timeBookingDAO.findById(Integer.parseInt(bookingDTO.getTimeBooking())).get();
+			}else {
+				timeBooking.setName(bookingDTO.getTimeBooking());
+			}
+			Employee stylist = employeeDAO.employeeByIdStylist(bookingDTO.getEmployee1().get(0).getId());
+				Booking booking1= bookingDAO.findById(bookingDTO.getId()).get();
+				booking1.setCreateDate(bookingDTO.getCreateDate());
+				booking1.setTimeBooking(timeBooking.getName());
+				booking1.setNote(bookingDTO.getNote());
+				booking1.setEmployee1(stylist);
+				booking1.setTotalPrice(bookingDTO.getTotalPrice());
+				booking1.setStatusbooking(statusBooking);
+				bookingDAO.save(booking1);
+				bookingDetailDAO.deleteByBookingId(bookingDTO.getId());
+				for(int i=0; i<bookingDTO.getListSer().size();i++ ){
+					BookingDetail bookingDetail = new BookingDetail();
+					bookingDetail.setBooking(booking1);
+					bookingDetail.setService(bookingDTO.getListSer().get(i));
+					bookingDetail.setPrice(bookingDTO.getListSer().get(i).getPrice());
+//					bookingDetail.setTime(bookingDTO.getListSer().get(i).getTime());
+					bookingDetailDAO.save(bookingDetail);
+				}
+			if (bookingDTO.getListTime()!=null){
+				timeBookingDetailDAO.delete(bookingDTO.getId());
+				for(int i=0; i<bookingDTO.getListTime().size();i++ ){
+					TimeBookingDetail timeBookingDetailDetail = new TimeBookingDetail();
+					timeBookingDetailDetail.setBookingId(booking1.getId());
+					timeBookingDetailDetail.setTimeBookingId(bookingDTO.getListTime().get(i));
+					timeBookingDetailDetail.setDate(bookingDTO.getCreateDate());
+					timeBookingDetailDetail.setStylistId(bookingDTO.getEmployee1().get(0).getId());
+					timeBookingDetailDAO.save(timeBookingDetailDetail);
+				}
+			}
+
+	} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return bookingDTO;
+	}
+
+	@Override
+	public BookingDTO AddInfoBookingUpdateToWFC(BookingDTO bookingDTO) {
+		Time time = null;
+		try {
+			Statusbooking statusBooking = statusBookingDAO.StatusbookingbyIdWFC();
+			TimeBooking timeBooking=new TimeBooking();
+			if (!bookingDTO.getTimeBooking().contains("h")){
+				timeBooking=timeBookingDAO.findById(Integer.parseInt(bookingDTO.getTimeBooking())).get();
+			}else {
+				timeBooking.setName(bookingDTO.getTimeBooking());
+			}
+			Employee stylist = employeeDAO.employeeByIdStylist(bookingDTO.getEmployee1().get(0).getId());
+			Booking booking1= bookingDAO.findById(bookingDTO.getId()).get();
+			booking1.setCreateDate(bookingDTO.getCreateDate());
+			booking1.setTimeBooking(timeBooking.getName());
+			booking1.setNote(bookingDTO.getNote());
+			booking1.setEmployee1(stylist);
+			booking1.setTotalPrice(bookingDTO.getTotalPrice());
+			booking1.setStatusbooking(statusBooking);
+			bookingDAO.save(booking1);
+			bookingDetailDAO.deleteByBookingId(bookingDTO.getId());
+			for(int i=0; i<bookingDTO.getListSer().size();i++ ){
+				BookingDetail bookingDetail = new BookingDetail();
+				bookingDetail.setBooking(booking1);
+				bookingDetail.setService(bookingDTO.getListSer().get(i));
+				bookingDetail.setPrice(bookingDTO.getListSer().get(i).getPrice());
+//					bookingDetail.setTime(bookingDTO.getListSer().get(i).getTime());
+				bookingDetailDAO.save(bookingDetail);
+			}
+			if (bookingDTO.getListTime()!=null){
+				timeBookingDetailDAO.delete(bookingDTO.getId());
+				for(int i=0; i<bookingDTO.getListTime().size();i++ ){
+					TimeBookingDetail timeBookingDetailDetail = new TimeBookingDetail();
+					timeBookingDetailDetail.setBookingId(booking1.getId());
+					timeBookingDetailDetail.setTimeBookingId(bookingDTO.getListTime().get(i));
+					timeBookingDetailDetail.setDate(bookingDTO.getCreateDate());
+					timeBookingDetailDetail.setStylistId(bookingDTO.getEmployee1().get(0).getId());
+					timeBookingDetailDAO.save(timeBookingDetailDetail);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return bookingDTO;
+	}
+
+	@Override
+	public BookingDTO AddInfoBookingUpdateWFC(BookingDTO bookingDTO) {
+		Time time = null;
+		try {
+			Employee stylist = employeeDAO.employeeByIdStylist(bookingDTO.getEmployee1().get(0).getId());
+			Booking booking1= bookingDAO.findById(bookingDTO.getId()).get();
+			booking1.setCreateDate(bookingDTO.getCreateDate());
+			booking1.setTimeBooking(bookingDTO.getTimeBooking());
+			booking1.setNote(bookingDTO.getNote());
+			booking1.setEmployee1(stylist);
+			booking1.setTotalPrice(bookingDTO.getTotalPrice());
+			bookingDAO.save(booking1);
+			bookingDetailDAO.deleteByBookingId(bookingDTO.getId());
+			for(int i=0; i<bookingDTO.getListSer().size();i++ ){
+				BookingDetail bookingDetail = new BookingDetail();
+				bookingDetail.setBooking(booking1);
+				bookingDetail.setService(bookingDTO.getListSer().get(i));
+				bookingDetail.setPrice(bookingDTO.getListSer().get(i).getPrice());
+//				bookingDetail.setTime(bookingDTO.getListSer().get(i).getTime());
+				bookingDetailDAO.save(bookingDetail);
+			}
+
+			if (bookingDTO.getListTime()!=null){
+				timeBookingDetailDAO.delete(bookingDTO.getId());
+				for(int i=0; i<bookingDTO.getListTime().size();i++ ){
+					TimeBookingDetail timeBookingDetailDetail = new TimeBookingDetail();
+					timeBookingDetailDetail.setBookingId(booking1.getId());
+					timeBookingDetailDetail.setTimeBookingId(bookingDTO.getListTime().get(i));
+					timeBookingDetailDetail.setDate(bookingDTO.getCreateDate());
+					timeBookingDetailDetail.setStylistId(bookingDTO.getEmployee1().get(0).getId());
+					timeBookingDetailDAO.save(timeBookingDetailDetail);
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return bookingDTO;
+	}
+
+	@Override
+	public Booking updateCAN(int id){
+		Booking booking=bookingDAO.findById(id).get();
+		Statusbooking statusbooking=statusBookingDAO.StatusBookigByIdCAN();
+		booking.setStatusbooking(statusbooking);
+		bookingDAO.save(booking);
+		return booking;
+	}
+
+	@Override
+	public List<Booking> seachBooking(String toDateStr, String formDateStr, String statusId, String cusName) {
+		java.sql.Date toDate=null;
+		java.sql.Date formDate=null;
+		//check thêm điều kiện
+		if(!toDateStr.equals("undefined")){
+			SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
+			Date toDateUt = null;
+			Date formDateUt = null;
+			try {
+				toDateUt = format.parse(toDateStr);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			toDate = new java.sql.Date(toDateUt.getTime());
+		}
+
+		if(!formDateStr.equals("undefined")){
+			SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
+			Date formDateUt = null;
+			try {
+				formDateUt = format.parse(formDateStr);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			formDate = new java.sql.Date(formDateUt.getTime());
+		}
+
+		List<Booking> bookings = bookingDAO.seachBooking(toDate,formDate,statusId,cusName);
+
+		return bookings;
+	}
+
+	@Override
+	public List<ThongBaoUCF> alertBookingUCF() {
+		return bookingDAO.alertBookingUCF();
 	}
 }

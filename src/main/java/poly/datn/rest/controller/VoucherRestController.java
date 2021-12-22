@@ -26,7 +26,7 @@ public class VoucherRestController {
 	}
 
 	@PostMapping("/rest/voucher")
-	public Voucher create(@RequestBody Voucher voucher) {
+	public Voucher create( @RequestBody Voucher voucher) {
 		return voucherService.save(voucher);
 	}
 
@@ -38,5 +38,10 @@ public class VoucherRestController {
 	@DeleteMapping("/rest/voucher/{id}")
 	public void delete(@PathVariable("id")String id) {
 		voucherService.delete(id);
+	}
+
+	@GetMapping("/rest/voucher/seachVoucher")
+	public List<Voucher> seachVoucher(String id){
+		return voucherService.seachVoucher(id);
 	}
 }

@@ -1,16 +1,12 @@
 package poly.datn.controller;
 
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import poly.datn.entity.Contact;
 import poly.datn.entity.Employee;
 import poly.datn.service.ContactService;
 import poly.datn.service.EmployeeService;
@@ -30,51 +26,40 @@ public class IndexController {
 	
 	@RequestMapping("/")
 	public String index(Model model) {
-		model.addAttribute("sers",iService.findAll());
+		model.addAttribute("sers",iService.findServicesActive());
 		List<Employee> listStylist = employeeService.loadStylist();
 		model.addAttribute("stylist",listStylist);
+		model.addAttribute("serviceTop3",iService.findServicesActiveTop3());
 		
 		return "layout/home";
 	}
 	
 	@RequestMapping("/services")
-	public String service() {
-		
+	public String service(Model model) {
+		model.addAttribute("services",iService.findServicesActive());
+		model.addAttribute("serviceTop3",iService.findServicesActiveTop3());
 		return "layout/services";
 	}
 	
-	@RequestMapping("/haircut")
-	public String haircut() {
-		
-		return "layout/haircut";
-	}
 	
 	@RequestMapping("/contact")
-	public String contact(@ModelAttribute Contact contact, Model model) {
-//		model.addAttribute("contact", contact);
+	public String contact(Model model) {
+		model.addAttribute("serviceTop3",iService.findServicesActiveTop3());
+
 		return "layout/contact";
 	}
-	
-//	@PostMapping("/contact/save")
-//	public String saveContact(
-//			Contact contact
-//			) {
-//		
-//			contactService.save(new Contact(new Date(), contact.getEmail(), contact.getFullName(), contact.getNote(), contact.getPhone(), false));
-//			
-//			return "redirect:/"; 
-//		
-//	}
-	
+
 	@RequestMapping("/about")
-	public String about() {
+	public String about(Model model) {
+		model.addAttribute("stylists", employeeService.getAllEmployeeActive());
+		model.addAttribute("serviceTop3",iService.findServicesActiveTop3());
 		
 		return "layout/about";
 	}
 
 	@RequestMapping("/booking")
 	public String booking(Model model) {
-		model.addAttribute("sers",iService.findAll());
+		model.addAttribute("sers",iService.findServicesActive());
 		List<Employee> listStylist = employeeService.loadStylist();
 		model.addAttribute("stylist",listStylist);
 //		for(int i=0; i<listStylist.size();i++){
@@ -83,11 +68,6 @@ public class IndexController {
 		return "layout/booking";
 	}
 
-//	@RequestMapping("/profile")
-//	public String profile() {
-//
-//		return "layout/profile";
-//	}
 
 	@RequestMapping("/admin")
 	public String admin() {

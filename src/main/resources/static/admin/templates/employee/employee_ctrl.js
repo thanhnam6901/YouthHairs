@@ -4,8 +4,9 @@ app.controller("employee-ctrl",function($scope,$http){
 	$scope.items = [];
     $scope.cates = [];
     $scope.form = {};
-    
-   
+
+    $scope.dsphanca = [];
+	$scope.calamviec = [];	
     
 	$scope.form.fullName = "";
     $scope.form.gender = "";
@@ -15,15 +16,59 @@ app.controller("employee-ctrl",function($scope,$http){
 	$scope.form.statusWork = "";
 	$scope.form.role = "";
 	$scope.form.startDate = "";
-	
+
+    $scope.seachEmployee={
+        fullName:''
+    }
 
     $scope.doSubmitForm = function(event) {
         alert("OK: " + $scope.myForm.$submitted);
 
     }
-    
-    
-    
+ 
+	$scope.getMinMaxTime = {
+		today: new Date(),
+		minDate: '',
+		
+		FuncMinDate(){
+			var input = document.getElementById("datePhanCa");
+	        var dd = this.today.getDate() + 1;
+	        var mm = this.today.getMonth() + 1;
+	        var yyyy = this.today.getFullYear();
+	        
+			if (this.today.getHours() > 21){
+				dd = this.today.getDate() + 2;
+	        }
+
+			if(dd > 31){
+				dd = this.today.getDate() - 30;
+				mm = this.today.getMonth() + 2;
+			}else{
+				mm = this.today.getMonth() + 1;
+			}
+						
+	        if (mm < 10) {
+				if(mm == 2){
+					if(dd > 28){
+						dd = this.today.getDate() - 27;
+						mm = this.today.getMonth() + 2;
+					}
+					
+				}
+	            mm = '0' + mm;
+	        }
+	        
+	        if (dd < 10) {
+	            dd = '0' + dd;
+	        }
+	        this.minDate = yyyy + '-' + mm + '-' + dd;
+	        input.setAttribute("min", this.minDate);
+	        //document.getElementById("dateUpdatePhanCa").setAttribute("min", this.minDate);
+			return this.minDate;
+		}	
+	}
+	
+	$scope.getMinMaxTime.FuncMinDate();
     
     $scope.disabledBtnReset = false;
 	$scope.disabledBtnUpdate = false;
@@ -34,7 +79,7 @@ app.controller("employee-ctrl",function($scope,$http){
 
     $scope.initialize = function(){
         //load product
-        $http.get("/rest/employee").then(resp => {
+        $http.get(`/rest/employee/seachEmployee?fullName=${$scope.seachEmployee.fullName}`).then(resp => {
             $scope.items = resp.data;
             $scope.reset();
             $scope.items.forEach(item => {
@@ -42,21 +87,24 @@ app.controller("employee-ctrl",function($scope,$http){
             })
         });
        
-        
-        
         //load categories
-         $http.get("/rest/role").then(resp => {
+        $http.get("/rest/role").then(resp => {
             $scope.cates = resp.data;
         });
    		 
-   		
+   		//load Workassign
+        $http.get("/rest/Workassign").then(resp => {
+            $scope.dsphanca = resp.data;
+        });
+
+		//load shifts
+        $http.get("/rest/shifts").then(resp => {
+            $scope.calamviec = resp.data;
+        });
+		
     }
     
-    
- 
-    
-    
-    
+        
     //khoi dau
     $scope.initialize();
     
@@ -78,10 +126,6 @@ app.controller("employee-ctrl",function($scope,$http){
 		$scope.disabledBtnCreate = false;
 		
     }
-    
-    
- 
-    
     
     
     //hien thi len form,sau do quay ve tab 0
@@ -111,9 +155,7 @@ app.controller("employee-ctrl",function($scope,$http){
             
         })
     }
-    
-    
-    
+
     
     //cap nhat sp
     $scope.update = function(){
@@ -128,10 +170,7 @@ app.controller("employee-ctrl",function($scope,$http){
             $(".nav-tabs a:eq(1)").tab('show');
         })
     }
-    
-    
-    
-    
+     
     
     
     //xoa sp
@@ -170,13 +209,7 @@ app.controller("employee-ctrl",function($scope,$http){
             alert("Upload Image False!");
             console.log("Error",error);
         })
-    }
-    
-    
-    
-    
-    
-    
+    }    
     
     
     $scope.disabledBtnFisrt = false;
@@ -228,10 +261,131 @@ app.controller("employee-ctrl",function($scope,$http){
 			$scope.disabledBtnLast = true;
         }
 	}
-	
-	
+
+    //tim kiem
+    $scope.seachEmployeeByName=function (){
+        var item=angular.copy($scope.seachEmployee);
+        $scope.seachEmployee.fullName =item.fullName;
+        $scope.pager.first();
+        $scope.initialize();
+    }
 	
 
+	 //phan trang list phan ca
+    $scope.pagerPhanCa = {
+        page: 0,
+        size:5,
+        
+        get items(){
+            var start = this.page * this.size;
+            return $scope.dsphanca.slice(start,start + this.size);
+        },
+        get count(){
+        //tong so sp chia kich thuoc trang
+            return Math.ceil(1.0 *$scope.dsphanca.length / this.size);
+        },
+
+        
+        get setPage(){
+			return this.first();
+		},
+        first(){
+        	this.page = 0;
+        	$scope.disabledBtnFisrt = true;
+			$scope.disabledBtnLast = false;
+        },
+        prev(){
+        	this.page--;
+        	if(this.page<=0){
+        		this.first();
+        	}
+        },
+        next(){
+        	this.page++;
+        	if(this.page+1>=this.count){
+        		this.last();
+        	}
+        },
+        last(){
+        	this.page = this.count - 1;
+        	$scope.disabledBtnFisrt = false;
+			$scope.disabledBtnLast = true;
+        }
+	}
+	
+	
+	$scope.formPhanCa = {
+		date: new Date($scope.getMinMaxTime.minDate)
+	};
+	
+	//show modal ca lam
+	$scope.showModalPhanCa = function(item){        
+        $scope.formPhanCa.employee = angular.copy(item);
+    }
+	
+	// them ca lam
+	$scope.saveCaLam = function(){
+	    var item = angular.copy($scope.formPhanCa);
+		const valueDate = moment($scope.formPhanCa.date).format('yyyy-MM-DD');
+		item.date = valueDate;
+		$http.get(`/rest/checkWorkassignNull?id=${item.employee.id}`).then(resp => {
+			var indCheck = resp.data.findIndex(a => a.date == item.date);
+			console.log(item.shifts)			
+			if(indCheck == -1){
+				if(item.shifts.id != null){
+					$http.post(`/rest/Workassign`, item).then(resp => {
+                        var index = $scope.dsphanca.findIndex(c => c.id === item.id);
+                        $scope.dsphanca[index] = item;			
+                        $scope.dsphanca.push(resp.data);
+                        $scope.initialize();
+						$scope.formPhanCa = {
+							date: new Date($scope.getMinMaxTime.minDate)
+						};        
+                        alert("Thêm ca làm " + item.shifts.id + " thành công cho nhân viên "+ item.employee.fullName +"!");
+                        $("#closePhanCaModal").click(); 
+                    }).catch(error => {
+                        alert("Thêm ca làm không thành công!");
+                        console.log("Error", error);
+                    });
+                    
+                }else{			
+                    alert("Bạn chưa chọn ca để thêm!")
+                }
+			}else{
+				alert("Nhân viên này đã đăng ký ca làm cho ngày "+ item.date +"!")
+			}
+        });
+
+		
+    }
+
+	//sua ca lam
+	$scope.formEditCaLam = {
+		//date: new Date($scope.getMinMaxTime.minDate)
+	}
+	$scope.editCaLam = function(item){
+        $scope.formEditCaLam = angular.copy(item);
+    }
+	
+	$scope.updateCaLam = function(){
+	    var item = angular.copy($scope.formEditCaLam);
+
+		if(item.shifts.id == null){
+			alert("Bạn chưa chọn ca để thêm!")
+		}else{			
+			$http.put(`/rest/Workassign`, item).then(resp => {
+				var index = $scope.dsphanca.findIndex(c => c.id === item.id);
+				$scope.dsphanca[index] = item;			
+	            $scope.dsphanca.push(resp.data);
+				//$scope.initialize();        
+	            alert("Sửa ca làm " + item.shifts.id + " thành công cho nhân viên "+ item.employee.fullName +"!");
+				$("#closeUpdatePhanCaModal").click(); 
+	        }).catch(error => {
+	            alert("Sửa ca làm không thành công!");
+	            console.log("Error", error);
+	        });
+		}
+    }
 
 
 })

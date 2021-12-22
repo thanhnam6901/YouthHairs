@@ -63,7 +63,9 @@ public interface EmployeeService {
 
 	List<Employee> findAll(Sort sort);
 
-	List<Employee> findAll();
+    List<Employee> bookingByStylist();
+
+    List<Employee> findAll();
 
 	Page<Employee> findAll(Pageable pageable);
 
@@ -81,4 +83,12 @@ public interface EmployeeService {
 	List<Employee> loadStylist();
 
 	List<StylistDTO> findStocktotal();
+
+	List<Employee> seachEmployee(String fullName);
+
+	List<Employee> getAllEmployeeActive();
+
+	Integer countNv();
+
+	Integer countStyList();
 }

@@ -13,7 +13,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import poly.datn.dao.DichVuHotDAO;
 import poly.datn.dao.ServiceDAO;
+import poly.datn.entity.DichVuHot;
 import poly.datn.entity.Services;
 import poly.datn.service.IServiceService;
 import poly.datn.service.dto.ServiceDTO;
@@ -22,6 +24,8 @@ import poly.datn.service.dto.ServiceDTO;
 public class ServiceService implements IServiceService {
     @Autowired
     ServiceDAO serviceDAO;
+    @Autowired
+    DichVuHotDAO dichVuHotDAO;
 
 
     @Override
@@ -54,11 +58,11 @@ public class ServiceService implements IServiceService {
     @Override
     public ServiceDTO save(ServiceDTO serviceDTO) {
         Services services=serviceDAO.selectById(serviceDTO.getId());
-        Time time = null;
+        //Time time = null;
         //get time
         try {
             Date date1 = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").parse(serviceDTO.getTime());
-            time = new Time(date1.getTime());
+            //time = new Time(date1.getTime());
             System.out.println("tostring: " + date1.toString());
             System.out.println(date1);
         } catch (ParseException e) {
@@ -67,7 +71,7 @@ public class ServiceService implements IServiceService {
         if (checkService(services)){
             System.out.println(services.getServiceName());
             services.setServiceName(serviceDTO.getServiceName());
-            services.setTime(time);
+//            services.setTime(time);
             services.setImage(serviceDTO.getImage());
             services.setNote(serviceDTO.getNote());
             services.setStatus(serviceDTO.getStatus());
@@ -78,13 +82,13 @@ public class ServiceService implements IServiceService {
             //set dữ liệu vào entity services
             Services servicesadd= new Services();
             servicesadd.setServiceName(serviceDTO.getServiceName());
-            servicesadd.setTime(time);
+//            servicesadd.setTime(time);
             servicesadd.setImage(serviceDTO.getImage());
             servicesadd.setNote(serviceDTO.getNote());
             servicesadd.setStatus(serviceDTO.getStatus());
             servicesadd.setPrice(serviceDTO.getPrice());
             serviceDAO.save(servicesadd);
-            System.out.println("2:" + servicesadd.getTime() + "3 : " + time);
+//            System.out.println("2:" + servicesadd.getTime() + "3 : " + time);
         }
         return serviceDTO;
     }
@@ -98,4 +102,14 @@ public class ServiceService implements IServiceService {
     public List<Services> seachServiceByName(String serviceName) {
         return serviceDAO.seachSericesByName(serviceName);
     }
+
+	@Override
+	public List<Services> findServicesActive() {
+		return serviceDAO.findServicesActive();
+	}
+
+	@Override
+	public List<DichVuHot> findServicesActiveTop3() {
+		return dichVuHotDAO.findServicesActiveTop3();
+	}
 }

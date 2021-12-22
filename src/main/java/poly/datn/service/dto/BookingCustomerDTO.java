@@ -5,8 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import poly.datn.entity.Services;
+import poly.datn.entity.TimeBookingDetail;
 
-import java.sql.Time;
 import java.util.Date;
 import java.util.List;
 
@@ -35,9 +35,11 @@ public class BookingCustomerDTO {
 
 	private float totalPrice;
 
-	private Time totalTime;
+	private String timeBooking;
 
 	//Service
 	private List<Services> listSer;
+
+	private List<Integer> listTime;
 
 }

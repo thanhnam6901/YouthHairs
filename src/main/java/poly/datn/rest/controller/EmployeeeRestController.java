@@ -31,13 +31,20 @@ public class EmployeeeRestController {
 		return employeeService.findAll();
 	}
 	
+	@GetMapping("/active")
+	public List<Employee> getAllEmployeeActive(){
+		return employeeService.getAllEmployeeActive();
+	}
 	
 	@PostMapping()
 	public Employee create(@RequestBody Employee employee) {
 		return employeeService.create(employee);
 	}
 	
-	
+	@GetMapping("/allStylist")
+	public List<Employee> stylistActive(){
+		return employeeService.bookingByStylist();
+	}
 	
 	@PutMapping("{id}")
 	public Employee update(@PathVariable("id")Integer id,@RequestBody Employee employee) {
@@ -54,4 +61,18 @@ public class EmployeeeRestController {
 		return employeeService.findStocktotal();
 	}
 
+	@GetMapping("/seachEmployee")
+	public List<Employee> seachEmployee(String fullName){
+		return employeeService.seachEmployee(fullName);
+	}
+
+	@GetMapping("/countNv")
+	public Integer countNv(){
+		return employeeService.countNv();
+	}
+
+	@GetMapping("/countStyList")
+	public Integer countStyList(){
+		return employeeService.countStyList();
+	}
 }

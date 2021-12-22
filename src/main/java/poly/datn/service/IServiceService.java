@@ -2,6 +2,7 @@ package poly.datn.service;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import poly.datn.entity.DichVuHot;
 import poly.datn.entity.Services;
 import poly.datn.service.dto.ServiceDTO;
 
@@ -23,5 +24,7 @@ public interface IServiceService {
 
     List<Services> seachServiceByName(String serviceName);
 
+    List<Services> findServicesActive();
 
+	List<DichVuHot> findServicesActiveTop3();
 }

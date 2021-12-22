@@ -8,9 +8,10 @@
                     <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                         Tìm Kiếm</div>
                     <div class="h5 mb-0 font-weight-bold text-gray-800">
-	                    <input type="text"
-						class="form-control bg-light border-0 small" placeholder="Tìm kiếm..."
-						aria-label="Search">
+						<input type="text"
+						   class="form-control bg-light border-0 small" placeholder="Nhập tên để tìm kiếm..."
+						   aria-label="Search"
+						   ng-model="seachBooking.cusName" ng-change="seachBookingByCusName()">
                     </div>
                </div>
            </div>
@@ -39,16 +40,20 @@
                         Lọc dữ liệu theo ngày</div>
                     <p class="text-xl text-info mb-1">Từ</p>
                     <div class="h5 mb-0 font-weight-bold text-gray-800">
-						<input type="date" class="form-control border-1">
+						<input type="date" class="form-control border-1" onkeydown="return false" ng-model="seachBooking.toDate" ng-change="loadTableToDate()">
                     </div>
                </div> <br>
                <div class=" no-gutters align-items-center">
                     <p class="text-xl text-info mb-1">Đến</p>
                     <div class="h5 mb-0 font-weight-bold text-gray-800">
-						<input type="date" class="form-control border-1">
+						<input type="date" class="form-control border-1" onkeydown="return false" ng-model="seachBooking.formDate" ng-change="loadTableFormDate()">
                     </div>
+               </div> <br>
+               <div class=" no-gutters align-items-center" align="center">
+                    <button type="button" class="btn btn-primary" ng-click="resetSeach()">Reset Table</button>
                </div>
            </div>
+			
 		</div> <br>
 		<div class="card border-left-primary shadow  py-2">
 			<div class="card-body">
@@ -57,12 +62,12 @@
                         Các Hoá Đơn</div>
                     <div class="form-check">
 					  <label class="form-check-label">
-					    <input type="radio" class="form-check-input" name="optradio" ng-model="statusBooking" ng-change="loadTableCPM()" value="CPM">Đã Thanh Toán
+						  <input type="radio" class="form-check-input" name="optradio" ng-model="seachBooking.statusBooking" ng-change="loadTableCPM()" value="CPM">Đã Thanh Toán
 					  </label>
 					</div>
 					<div class="form-check">
 					  <label class="form-check-label">
-					    <input type="radio" class="form-check-input" name="optradio" ng-model="statusBooking" ng-change="loadTableCAN()" value="CAN">Đã Huỷ
+						  <input type="radio" class="form-check-input" name="optradio" ng-model="seachBooking.statusBooking" ng-change="loadTableCAN()" value="CAN">Đã Huỷ
 					  </label>
 					</div>
                </div>
@@ -78,25 +83,26 @@
 					đơn</h6>
 			</div>
 			<div class="card-body">
-				<a href="#!billpaid" class="btn btn-success btn-icon-split"> <span
+				<!-- 
+				<button class="btn btn-success btn-icon-split" id="export"> <span
 					class="icon text-white-50"> <i class="	fas fa-folder-open"></i>
 					</span> <span class="text">Xuất Dữ Liệu</span>
-				</a>	
-				<br> <br>
+				</button>	
+				<br> <br> -->
 				<div class="table-responsive">
-					<table class="table table-hover table-secondary text-dark text-center">
-						<thead>
+					<table class="table table-hover table-striped text-dark text-center"  >
+						<thead class="thead-dark">
 							<tr>
 								<th>Mã Hoá Đơn</th>
 								<th>Ngày Tạo</th>
 								<th>Tên Khách Hàng</th>
 								<th>Tên Stylist</th>
 								<th>Trạng Thái</th>
-								<th>Chi Tiết</th>
+								<th></th>
 							</tr>
 						</thead>
 						<tbody>
-							<tr class="table-info" ng-repeat="item in pager.items">
+							<tr ng-repeat="item in pager.items" >
 								<td>{{item.id}}</td>
 								<td>{{item.createDate}}</td>
 								<td>{{item.customer.fullName}}</td>
@@ -104,9 +110,10 @@
 								<td>{{item.statusbooking.statusName}}</td>
 								<td><a href="#!billpaid" ng-click="showDetail(item)"
 									class="btn btn-info btn-circle" data-toggle="modal"
-									data-target="#infoModal"> <i class="fas fa-info-circle"></i>
+									data-target="#infoBillModal"> <i class="fas fa-info-circle"></i>
 								</a></td>
 							</tr>
+							<tr ng-if="pager.count == 0"><td colspan="6" class="text-info"> <h4>Không có hoá đơn nào!!!</h4></td></tr>
 						</tbody>
 					</table>
 					<div class="text-center">
@@ -127,16 +134,11 @@
 				</div>
 			</div>
 		</div>
-
 	</div>
-
-
 </div>
 
-
-
 <!-- Info Modal-->
-<div class="modal fade" id="infoModal" tabindex="-1" role="dialog"
+<div class="modal fade" id="infoBillModal" tabindex="1" role="dialog"
 	aria-labelledby="exampleModalLabel" aria-hidden="true">
 	<div class="modal-dialog" role="document">
 		<div class="modal-content">

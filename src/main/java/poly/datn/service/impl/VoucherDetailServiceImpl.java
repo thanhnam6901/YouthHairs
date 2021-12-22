@@ -45,10 +45,7 @@ public class VoucherDetailServiceImpl implements VoucherDetailService{
 				 voucherdetail = voucherDetailDAO.selectVoucherDetailByCus(voucherDetailInfoDTO.getVoucherId());
 				voucherdetail.setStatus(false);
 				voucherDetailDAO.save(voucherdetail);
-			}else{
-				System.out.println("voucherDetailInfoDTO.getVoucherId() = null");
 			}
-
 			Statusbooking statusbooking= statusBookingDAO.StatusbookingbyIdCPM();
 			Voting voting = votingDAO.selectVotingById(voucherDetailInfoDTO.getVoting());
 
@@ -56,11 +53,15 @@ public class VoucherDetailServiceImpl implements VoucherDetailService{
 			if (booking != null) {
 				booking.setStatusbooking(statusbooking);
 				booking.setVoting(voting);
-				booking.setVoucherdetails(voucherdetail);
+				if(voucherDetailInfoDTO.getVoucherId()==null){
+					booking.setVoucherdetails(null);
+				}else{
+					booking.setVoucherdetails(voucherdetail);
+				}
 				booking.setTotalPrice(voucherDetailInfoDTO.getTotalPrice());
 				bookingDAO.save(booking);
 			}else{
-				System.out.println("booking = null");
+				throw new Exception("Thanh Toan error");
 			}
 		}catch (Exception e){
 			e.printStackTrace();

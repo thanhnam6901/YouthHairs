@@ -1,5 +1,6 @@
 package poly.datn.service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -9,8 +10,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.web.bind.annotation.PathVariable;
 import poly.datn.entity.Booking;
 import poly.datn.entity.Employee;
+import poly.datn.entity.ThongBaoUCF;
+import poly.datn.service.dto.BookingDTO;
 
 public interface BookingService {
 
@@ -79,4 +83,24 @@ public interface BookingService {
 	List<Employee> findByRoleAndSatus();
 
     List<Booking> findByStatusWFCAndStylist(int id);
+
+	Booking findBookingIATbyStylist(Integer id);
+
+	List<Booking> findBookingWFCbyStylist(Integer id, Date date);
+
+	List<Booking> getAllBookingIAT();
+
+    String[] getAllTimeBooking();
+
+    BookingDTO AddInfoBookingUpdate(BookingDTO bookingDTO);
+
+    BookingDTO AddInfoBookingUpdateToWFC(BookingDTO bookingDTO);
+
+    BookingDTO AddInfoBookingUpdateWFC(BookingDTO bookingDTO);
+
+    Booking updateCAN(int id);
+
+	List<Booking>seachBooking(String toDate, String formDate, String statusId,String cusName);
+
+	List<ThongBaoUCF> alertBookingUCF();
 }

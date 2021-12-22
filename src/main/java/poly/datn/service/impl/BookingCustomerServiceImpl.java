@@ -11,7 +11,6 @@ import poly.datn.service.dto.BookingIatDTO;
 import poly.datn.service.dto.StylistDTO;
 
 import javax.persistence.Tuple;
-import java.sql.Time;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -38,6 +37,8 @@ public class BookingCustomerServiceImpl  implements BookingCustomerService{
 	@Autowired
 	EmployeeDAO empDAO;
 
+	@Autowired
+	TimeBookingDetailDAO timeBookingDetailDAO;
 
 	public boolean checkNullCustomer(Customer customer){
 		return customer != null ? true :false;
@@ -74,30 +75,33 @@ public class BookingCustomerServiceImpl  implements BookingCustomerService{
 			if(!checkNullBooking(booking )) {
 				Booking booking1= new Booking();
 				booking1.setCreateDate(bookingCustomerDTO.getCreateDate());
-				booking1.setTime(null);
+				booking1.setTimeBooking(bookingCustomerDTO.getTimeBooking());
 				booking1.setNote(bookingCustomerDTO.getNote());
 				booking1.setEmployee1(stylist);
 				booking1.setTotalPrice(bookingCustomerDTO.getTotalPrice());
-				booking1.setTotalTime(bookingCustomerDTO.getTotalTime());
 				booking1.setCustomer(cus1);
 				booking1.setStatusbooking(statusBooking);
 				booking1.setVoting(null);
 				booking1.setVoucherdetails(null);
 				bookingDao.save(booking1);
-
 				for(int i=0; i<bookingCustomerDTO.getListSer().size();i++ ){
 					BookingDetail bookingDetail = new BookingDetail();
 					bookingDetail.setBooking(booking1);
 					bookingDetail.setService(bookingCustomerDTO.getListSer().get(i));
 					bookingDetail.setPrice(bookingCustomerDTO.getListSer().get(i).getPrice());
-					bookingDetail.setTime(bookingCustomerDTO.getListSer().get(i).getTime());
 					bDetailDAO.save(bookingDetail);
-				}}else{
-
-				throw new Exception("c error");
-
+				}
+				for(int i=0; i<bookingCustomerDTO.getListTime().size();i++ ){
+					TimeBookingDetail timeBookingDetailDetail = new TimeBookingDetail();
+					timeBookingDetailDetail.setBookingId(booking1.getId());
+					timeBookingDetailDetail.setTimeBookingId(bookingCustomerDTO.getListTime().get(i));
+					timeBookingDetailDetail.setDate(bookingCustomerDTO.getCreateDate());
+					timeBookingDetailDetail.setStylistId(bookingCustomerDTO.getStylistId());
+					timeBookingDetailDAO.save(timeBookingDetailDetail);
+				}
+		}else{
+				throw new Exception("Booking Cus error");
 			}
-
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -114,11 +118,16 @@ public class BookingCustomerServiceImpl  implements BookingCustomerService{
 		List<Tuple> stockTotalTuples = bookingDao.bookingIAT();
 		List<BookingIatDTO> stockTotalDto = stockTotalTuples.stream()
 				.map(t -> new BookingIatDTO(
-						t.get(0, Integer.class),
-						t.get(1, Time.class)
+						t.get(0, Integer.class)
+						//t.get(1, Time.class)
 				))
 				.collect(Collectors.toList());
 
 		return stockTotalDto;
+	}
+
+	@Override
+	public Booking checkBookingUCF(String phone) {
+		return bookingDao.checkBookingUCF(phone);
 	}
 }

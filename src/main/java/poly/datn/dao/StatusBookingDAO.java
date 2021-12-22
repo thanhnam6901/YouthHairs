@@ -11,4 +11,16 @@ public interface StatusBookingDAO extends JpaRepository<Statusbooking, String> {
 
     @Query(value = "SELECT b FROM Statusbooking b  WHERE b.id = 'CPM' ")
     Statusbooking StatusbookingbyIdCPM();
+
+    @Query(value = "SELECT b FROM Statusbooking b  WHERE b.id = 'WFC' ")
+    Statusbooking StatusbookingbyIdWFC();
+
+    @Query(value = "SELECT b FROM Statusbooking b  WHERE b.id = 'CAN'")
+    Statusbooking StatusBookigByIdCAN();
+
+    @Query(value = "SELECT b FROM Statusbooking b  WHERE b.id = 'COM'")
+    Statusbooking StatusBookigByIdCOM();
+
+    @Query(value = "SELECT b FROM Statusbooking b  WHERE b.id = 'IAT' ")
+    Statusbooking StatusbookingbyIdIAT();
 }

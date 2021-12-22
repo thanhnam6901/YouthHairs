@@ -12,12 +12,12 @@
 			</div>
 		</div>
 		<div class="table-responsive">
-			<table class="table table-hover table-secondary text-dark text-center">
-				<thead>
+			<table class="table table-hover table-striped text-dark text-center">
+				<thead class="thead-dark">
 					<tr>
 						<th>Khách Hàng</th>
 						<th>Stylist</th>
-						<th>Tổng Thời Gian</th>
+						<th>Thời Gian</th>
 						<th>Tổng Tiền</th>
 						<th>Ngày Tạo</th>
 						<th>Trạng Thái</th>
@@ -25,16 +25,16 @@
 					</tr>
 				</thead>
 				<tbody>
-				<tr class="table-primary" ng-repeat="item in pager1.items1 | filter:searchText" >
+				<tr ng-repeat="item in pager1.items1 | filter:searchText" >
 					<td>{{item.customer.fullName}}</td>
 					<td>{{item.employee1.fullName}}</td>
-					<td>{{item.totalTime}}</td>
+					<td>{{item.timeBooking}}</td>
 					<td>{{item.totalPrice}}</td>
 					<td>{{item.createDate | date:'dd-MM-yyyy'}}</td>
 					<td>{{item.statusbooking.statusName}}</td>
 					<td align="center"><a style="cursor: pointer;" ng-click="showDetail1(item);
-																	voucherCus.voucherByCustomer(item.customer.id);
-																	 serviceByBooking.getSerDetail(item.id) "
+																voucherCus.voucherByCustomer(item.customer.id);
+																serviceByBooking.getSerDetail(item.id) "
 										  class="btn btn-success" data-toggle="modal"
 										  data-target="#confirmModal"> Thanh Toán
 					</a>
@@ -60,7 +60,7 @@
 				</button> <button ng-click="pager1.prev()" class="btn btn-primary btn-circle"> <i
 					class="fas fa-angle-left"></i>
 				</button>
-				<button class="btn btn-primary" disabled="disabled">{{pager.page + 1}} of {{pager.count}}</button>
+				<button class="btn btn-primary" disabled="disabled">{{pager1.page + 1}} of {{pager1.count}}</button>
 				<button ng-click="pager1.next()" class="btn btn-primary btn-circle"> <i
 						class="fas fa-angle-right"></i>
 				</button> <button ng-click="pager1.last()" class="btn btn-primary btn-circle"> <i
@@ -87,46 +87,38 @@
 			<!-- Modal body -->
 			<div class="modal-body p-5">
 					<div class="row form-group">
-						<div class="col-md-12">
+						<div class="col-md-6 mb-3 mb-md-0">
 							<label class="text-black" for="fname">Họ Tên Khách Hàng</label><input
 								type="text" id="fname" class="form-control" ng-model="form1.customer.fullName"
 								placeholder="Họ Tên..." readonly>
 						</div>
-					</div>
-					<div class="row form-group">
 						<div class="col-md-6 mb-3 mb-md-0">
 							<label class="text-black" for="email">Email</label> <input ng-model="form1.customer.email"
-								type="email" id="email" class="form-control" placeholder="Email"
-								readonly>
+																					   type="email" id="email" class="form-control" placeholder="Email"
+																					   readonly>
 						</div>
+					</div>
+					<div class="row form-group">
 						<div class="col-md-6">
 							<label class="text-black" for="lname">Số Điện Thoại </label> <input
 								type="text" id="lname" class="form-control" ng-model="form1.customer.phone"
 								placeholder="Số Điện Thoại..." readonly>
 						</div>
-					</div>
-
-					<div class="row form-group">
 						<div class="col-md-6 mb-3 mb-md-0">
-							<label class="text-black" for="date">Ngày Làm Tóc</label> <input
-								type="date" id="date" class="form-control datepicker px-2" ng-model="form1.createDate"
-								placeholder="Ngày Làm Tóc..." readonly>
-						</div>
-						<div class="col-md-6">
-							<label class="text-black" for="time">Khung Giờ Làm Tóc</label> <input
-								type="time" id="time" class="form-control datepicker px-2" ng-model="form1.time"
-								placeholder="Ngày Làm Tóc..." readonly>
+						<label class="text-black" for="date1">Ngày Làm Tóc</label> <input
+							type="date" id="date1" class="form-control datepicker px-2" ng-model="form1.createDate"
+							placeholder="Ngày Làm Tóc..." readonly>
 						</div>
 					</div>
 
 					<div class="row form-group">
 						<div class="col-md-12">
-							<label class="text-black" for="treatment">Các Dịch Vụ Sử Dụng</label>
+							<label class="text-black" for="treatment">Các Dịch Vụ Đã Sử Dụng</label>
 							<ul class="services-form" >
 								<li ng-repeat="item in listSer">
 									<input type="checkbox" id="{{item.serviceName}}" disabled checked/>
 									<label for="{{item.serviceName}}">
-									<img src="/images/haircut/{{item.image}}" />
+									<img src="../../../../images/{{item.image}}" />
 										<br>
 										{{item.serviceName}}
 								</label></li>
@@ -180,16 +172,31 @@
 
 					<div class="row form-group">
 						<div class="col-md-6">
-							<label class="text-black" for="voucher" >Voucher</label>
-							<select class="form-control" id="voucher" ng-model = "formCPM.voucherId" ng-value="{{x.id}}" ng-options="x.id for x in voucherByCus">
-<!--								 	<option disabled value="">Chon Voucher</option>-->
-<!--									<option  ng-repeat="x in voucherByCus" ng-value="{{x.id}}"> {{x.id}}</option>-->
-							</select>
+							<h5 id="left" class="text-black" for="voucher" >Voucher: 
+								<a style="cursor: pointer;" data-toggle="modal" data-target="#VoucherModal">
+								<b ng-if="tenbuadi == ''"  class="text-secondary">
+									VoucherID 
+								</b>
+								<b ng-if="tenbuadi != ''"  class="text-primary">
+									{{tenbuadi}}
+								</b>								
+								
+								</a> 
+							</h5>
+							
+							<!-- 
+							<ul class="services-form" >
+								<li ng-repeat="item in voucherByCus">
+									<input type="checkbox"  id="{{item.id}}" ng-click="pay.add(item);totalPricebyVoucher.totalPrice1()"/>
+									<label for="{{item.id}}" >
+										<br>
+										{{item.id}}
+									</label></li>
 
+							</ul> -->
 						</div>
 						<div class="col-md-6 text-center">
-							<h5 class="text-black" >Tổng Thời Gian: <br> <span class="text-info">{{form1.totalTime}}</span></h5>
-							<h4 class="text-black" >Tổng Tiền: <br> <span class="text-warning">{{pay.totalPrice}} VNĐ</span></h4>
+							<h4 id="right" class="text-black" >Tổng Tiền: <br> <span class="text-warning" >{{totalPricebyVoucher.total}} VNĐ</span></h4>
 						</div>
 					</div>
 
@@ -202,6 +209,31 @@
 						</div>
 					</div>
 
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<!-- Voucher Modal-->
+<div class="modal fade" id="VoucherModal" tabindex="-1" role="dialog"
+	aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title text-center" id="exampleModalLabel">Chọn Voucher</h5>
+				<button class="close" id="closeVoucherModal" type="button" data-dismiss="modal"
+					aria-label="Close">
+					<span aria-hidden="true">×</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<a style="cursor: pointer;" 
+					class="btn btn-info btn-block" 
+					ng-repeat="item in voucherByCus" 
+					ng-click="pay.add(item);
+								totalPricebyVoucher.totalPrice1()">
+					<i class="fas fa-user-tie"></i> {{item.id}}</a>
 			</div>
 		</div>
 	</div>

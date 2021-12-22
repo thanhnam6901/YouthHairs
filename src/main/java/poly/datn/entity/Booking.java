@@ -9,7 +9,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.sql.Time;
 import java.util.Date;
 import java.util.List;
 
@@ -33,15 +32,13 @@ public class Booking implements Serializable {
 	@Temporal(TemporalType.DATE)
 	private Date createDate;
 
-	private Time time;
+	private String timeBooking;
 	
 	private String note;
 
 //	private int stylistId;
 
 	private float totalPrice;
-
-	private Time totalTime;
 
 	//bi-directional many-to-one association to Customer
 	@ManyToOne
